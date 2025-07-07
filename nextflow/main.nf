@@ -31,7 +31,7 @@ process kneaddata {
 
     """
     kneaddata --unpaired $file --output ./ --output-prefix ${sample}_kneaddata \
-        --reference-db ${kneaddata_db}
+        --reference-db ${params.kneaddata_db}
 
     gzip *.fastq
     """
