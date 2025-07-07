@@ -68,7 +68,7 @@ process humann {
     
     """
     humann --input $knead_out --taxonomic-profile $profile \
-       --remove-temp-output --search-mode uniref90
+       --remove-temp-output --search-mode uniref90 \
        --output-basename $sample
     """
 }
