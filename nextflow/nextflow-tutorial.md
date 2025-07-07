@@ -17,10 +17,6 @@ First, we run `kneaddata`:
 kneaddata --unpaired XXXX_subsample.fastq.gz \
     --output ./ \Starting files
 
-With this in mind, the `main.nf` file in this directory
-has the start of a workflow setup for you.
-
-First, it uses an input "Channel",
     --output-prefix XXXX_kneaddata
 ```
 
@@ -55,5 +51,10 @@ humann --input XXXX_kneaddata.fastq.gz \
 With this in mind, the `main.nf` file in this directory
 has the start of a workflow setup for you.
 
-First, it uses an input "Channel",
-
+First, it uses an input "Channel factory" -
+this is an iterator that can run each sequence of tasks
+on each of the input files.
+Because we're using single-end files,
+we're using the `from_path` channel,
+which finds all files matching a given glob pattern,
+in this case, `*.fastq.gz`

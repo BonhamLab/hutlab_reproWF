@@ -30,7 +30,10 @@ process kneaddata {
     shell:
 
     """
-    kneaddata --unpaired $file --output ./ --output-prefix ${sample}_kneaddata
+    kneaddata --unpaired $file --output ./ --output-prefix ${sample}_kneaddata \
+        --reference-db ${kneaddata_db}
+
+    gzip *.fastq
     """
 }
 
