@@ -6,12 +6,12 @@ workflow {
     reads_ch = Channel.fromPath("../input/*.fastq.gz")
 
     kneaddata_out = kneaddata(reads_ch)
-    // metaphlan_out = metaphlan(kneaddata_out[0], kneaddata_out[1])
-
-    // What to add to run the humann process? 
+    metaphlan_out = metaphlan(kneaddata_out[0], kneaddata_out[1])
+    humann_out = humann(metaphlan_out[0], metaphlan_out[1], metaphlan_out[2])
 }
 
 process kneaddata {
+    publishDir "kneaddata/"
     input:
     path file
 
@@ -34,6 +34,8 @@ process kneaddata {
 }
 
 process metaphlan {
+    publishDir "metaphlan/", mode: copy
+
     input:
     val sample
     path knead_out
@@ -43,26 +45,33 @@ process metaphlan {
     path knead_out
     path "${sample}_profile.tsv"
 
-    script:
-    """
-    # Your code here...
-    
-    """
+    shell:
 
+    """
+    metaphlan $knead_out -o ${sample}_profile.tsv \
+        --input_type fastq
+    """
 }
 
 process humann {
+    publishDir "humann/", mode: copy
+
     input:
-    // what inputs do you knead?
+    val sample
+    path knead_out
+    path profile
 
     output:
-    // what outputs do you need?
+    path "${sample}_genefamilies.tsv"
+    path "${sample}_pathabundance.tsv"
+    path "${sample}_pathcoverage.tsv"
 
-    script:
+    shell:
     
     """
-    # your code here:
-
+    humann --input $knead_out -o ./ --taxonomic-profile $profile \
+       --remove-temp-output --search-mode uniref90 \
+       --output-basename $sample
     """
 }
 

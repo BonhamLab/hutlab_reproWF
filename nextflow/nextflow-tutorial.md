@@ -270,7 +270,87 @@ if you need the files in later steps, this will break the workflow.
 
 ## Adding a new process
 
+We are now ready to add in the next step - `metaphlan`.
+Recall that the shell command we want to run is
 
+```sh
+metaphlan XXXX_kneaddata.fastq.gz --output XXXX_profile.tsv \
+    --input_type fastq
+```
+
+First, uncomment the call to the `metaphlan` process in the workflow
+(remove the leading `//`).
+Notice that there are two arguments being passed: `kneaddata_out[0]` and `kneaddata_out[1]`.
+These refer to the first and second outputs of the `kneaddata` process,
+the `sample` value and the `knead_out` path.
+
+Take a look at the process definition already completed -
+
+```groovy
+process metaphlan {
+    input:
+    val sample
+    path knead_out
+
+    output:
+    val sample
+    path knead_out
+    path "${sample}_profile.tsv"
+
+    script:
+    """
+    # Your code here...
+    
+    """
+
+}
+```
+
+Here, `input:` has these two arguments,
+*and so does `output:`*.
+This is because we'll need to pass these variables to `humann` as well -
+unfortunately, if you try to re-use the `kneaddata` outputs in a subsequent step,
+the order of the iterators get out of whack
+and you end up mixing outputs from different samples together.
+
+Enter the correct command in the `script` section -
+remember to replace `XXXX` with the correct string interpolation syntax.
+
+Once you're ready to try it, run the exact same command as above (including `-resume`!).
+You should see something like:
+
+```sh
+nextflow tutorial.nf --kneaddata_db /home/kevin/Repos/hutlab_reproWF/input/human_genome/ -resume
+
+ N E X T F L O W   ~  version 24.04.3
+
+Launching `tutorial-inprogress.nf` [sick_shockley] DSL2 - revision: e0e9bc543a
+
+executor >  local (6)
+[4b/a32e45] kneaddata (4) [100%] 6 of 6, cached: 6 ✔
+[76/547136] metaphlan (2) [  0%] 0 of 6
+```
+
+Did you remember to add a `publishDir`?
+If not, don't sweat it!
+Add it now, and run it again with `-resume`,
+your previous results should not need to re-run.
+
+## Make the humann process and call it
+
+You now know all of the pieces!
+Can you create a process to run `humann`?
+This is the shell command:
+
+```sh
+humann --input XXXX_kneaddata.fastq.gz \
+    --taxonomic-profile XXXX_profile.tsv \
+    --output ./ \
+    --output-basename XXXX
+```
+
+The input and taxonomic profiles should be outputs from previous processes.
+How will you get the output basename?
 
 ## TODO:
 
