@@ -1,3 +1,6 @@
 *.fastq.gz
 .nextflow*
 **/work/*
+input/human_genome
+nextflow/kneaddata
+nextflow/tutorial-inprogress.nf
