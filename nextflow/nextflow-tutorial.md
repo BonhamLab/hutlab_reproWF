@@ -228,7 +228,7 @@ In it's current state, if you make this directory
 the working directory, you should be able to run:
 
 ```sh
-$ nextflow tutorial.nf --kneaddata_db # whatever the path to kd is
+$ nextflow tutorial.nf --kneaddata_db ../input/human_genome/
 ```
 
 This will find the 6 fastq files and run `kneaddata` on them.
@@ -254,7 +254,7 @@ After adding this, run the workflow again,
 including the `-resume` flag, eg:
 
 ```groovy
-$ nextflow tutorial.nf -resume --kneaddata_db # whatever the path to kd is
+$ nextflow tutorial.nf --kneaddata_db ../input/human_genome/ -resume
 ```
 
 Your previous run should be cached, but now the outputs will be linked
@@ -320,7 +320,7 @@ Once you're ready to try it, run the exact same command as above (including `-re
 You should see something like:
 
 ```sh
-nextflow tutorial.nf --kneaddata_db /home/kevin/Repos/hutlab_reproWF/input/human_genome/ -resume
+nextflow tutorial.nf --kneaddata_db ../input/human_genome/ -resume
 
  N E X T F L O W   ~  version 24.04.3
 
@@ -352,8 +352,3 @@ humann --input XXXX_kneaddata.fastq.gz \
 The input and taxonomic profiles should be outputs from previous processes.
 How will you get the output basename?
 
-## TODO:
-
-- add parameter for input directory
-- add parameter for location of kneaddata database
-- paired-end files
