@@ -1,3 +1,7 @@
 *.fastq.gz
 .nextflow*
 **/work/*
+input/human_genome
+nextflow/kneaddata
+nextflow/tutorial-inprogress.nf
+input/humann_databases/full_chocophlan.v201901_v31.tar.gz
