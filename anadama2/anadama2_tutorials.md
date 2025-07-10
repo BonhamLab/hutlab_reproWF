@@ -1,9 +1,9 @@
 #anadama2 workflow tutorial:  
 
 ### Anadama2 and general example workflow (python executable + R executable + data table + PDF generation task)
- ```
+```
 python3 run.py
- ```
+```
 
 ### Anadama2 running metaphlan from scratch for multiple sample
 ```
@@ -17,6 +17,11 @@ python3 run_metaphlan_workflow_grid.py --grid-jobs 2
 
 #To run this workflow and change the time, memory, and cores (increasing all 2x) for the named task task1, run:
 python3 run_metaphlan_workflow_grid.py --grid-jobs 2 --grid-tasks="task1,4,40,2"
+```
+
+### Anadama2 - Running kneadata + metaphlan + humann 
+```
+python3 run_biobakery_workflow.py 
 ```
 
 ### Anadama2 - making modification of existing biobakery workflows

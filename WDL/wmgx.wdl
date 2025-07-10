@@ -1,57 +1,134 @@
 version 1.0
 
-workflow wmgx_workflow {
+workflow metagenomics_batch_pipeline {
   input {
-    File input               # your input file or manifest
-    String output_dir        # path to the directory to be created for outputs
-    String functional_profiling_option = "--bypass-translated-search"
-    Boolean bypass_strain_profiling = true
-    Int threads = 4
+    Array[File] raw_reads_fastqs
+    String      kneaddata_db
+    String      metaphlan_db
+    String      humann_protein_db
+    String      humann_nucleotide_db
+    String      output_dir
+    Int         threads = 4
   }
 
-  call wmgx_task {
-    input:
-      input = input,
-      output_dir = output_dir,
-      functional_profiling_option = functional_profiling_option,
-      bypass_strain_profiling = bypass_strain_profiling,
-      threads = threads
+  scatter sample_fastq in raw_reads_fastqs {
+    # derive a sample‐specific name (strip extension)
+    String sample_name = basename(sample_fastq).replace(/\.fastq$/, "")
+
+    call kneaddata_task {
+      input:
+        raw_reads = sample_fastq,
+        db        = kneaddata_db,
+        threads   = threads,
+        out_dir   = output_dir + "/${sample_name}/kneaddata"
+    }
+
+    call metaphlan_task {
+      input:
+        knead_out_fastq = kneaddata_task.cleaned_fastq,
+        db              = metaphlan_db,
+        threads         = threads,
+        out_dir         = output_dir + "/${sample_name}/metaphlan"
+    }
+
+    call humann_task {
+      input:
+        knead_out_fastq   = kneaddata_task.cleaned_fastq,
+        protein_db        = humann_protein_db,
+        nucleotide_db     = humann_nucleotide_db,
+        threads           = threads,
+        out_dir           = output_dir + "/${sample_name}/humann"
+    }
   }
 
   output {
-    Directory output_data = wmgx_task.output_dir
+    Array[Directory] kneaddata_dirs      = kneaddata_task.out_dir
+    Array[File]      metaphlan_profiles = metaphlan_task.profile_txt
+    Array[Directory] humann_dirs         = humann_task.out_dir
   }
 }
 
-task wmgx_task {
+########################################
+# Task definitions (unchanged from before)
+########################################
+
+task kneaddata_task {
   input {
-    File input
-    String output_dir
-    String functional_profiling_option
-    Boolean bypass_strain_profiling
-    Int threads
+    File   raw_reads
+    String db
+    Int    threads
+    String out_dir
   }
 
   command <<<
     set -euo pipefail
-    # create output dir if it doesn’t exist
-    mkdir -p "${output_dir}"
-
-    biobakery_workflows wmgx \
-      --input "${input}" \
-      --output "${output_dir}" \
-      ${functional_profiling_option} \
-      ${ if (bypass_strain_profiling) "--bypass-strain-profiling" else "" } \
-      --threads ${threads}
+    mkdir -p ~{out_dir}
+    kneaddata \
+      --input ~{raw_reads} \
+      --reference-db ~{db} \
+      --output ~{out_dir} \
+      --threads ~{threads}
   >>>
 
   output {
-    # expose the entire output directory
-    Directory output_dir = output_dir
+    File     cleaned_fastq = "~{out_dir}/${basename(raw_reads)}_kneaddata_clean.fastq"
+    Directory out_dir
   }
 
-  runtime {
-    cpu: threads
-    # memory, disks, etc. can be added here if needed
+  runtime { cpu: threads }
+}
+
+task metaphlan_task {
+  input {
+    File   knead_out_fastq
+    String db
+    Int    threads
+    String out_dir
   }
+
+  command <<<
+    set -euo pipefail
+    mkdir -p ~{out_dir}
+    metaphlan \
+      ~{knead_out_fastq} \
+      --input_type fastq \
+      --nproc ~{threads} \
+      --bowtie2db ~{db} \
+      --bowtie2out ~{out_dir}/metaphlan.bowtie2.bz2 \
+      -o ~{out_dir}/profile.txt
+  >>>
+
+  output {
+    File      profile_txt = "~{out_dir}/profile.txt"
+    Directory out_dir
+  }
+
+  runtime { cpu: threads }
+}
+
+task humann_task {
+  input {
+    File   knead_out_fastq
+    String protein_db
+    String nucleotide_db
+    Int    threads
+    String out_dir
+  }
+
+  command <<<
+    set -euo pipefail
+    mkdir -p ~{out_dir}
+    humann \
+      --input ~{knead_out_fastq} \
+      --output ~{out_dir} \
+      --threads ~{threads} \
+      --protein-database ~{protein_db} \
+      --nucleotide-database ~{nucleotide_db}
+  >>>
+
+  output {
+    Directory out_dir
+  }
+
+  runtime { cpu: threads }
 }
