@@ -1,0 +1,13 @@
+{
+  "metagenomics_batch_pipeline.raw_reads_fastqs": [
+    "./input/HD32R1_subsample.fastq.gz",
+    "./input/HD42R4_subsample.fastq.gz",
+    "./input/HD48R4_subsample.fastq.gz"
+  ],
+  "metagenomics_batch_pipeline.kneaddata_db":         "./input/human_genome",
+  "metagenomics_batch_pipeline.metaphlan_db":         "/metaphlan_db",
+  "metagenomics_batch_pipeline.humann_protein_db":    "/humann_protein_db",
+  "metagenomics_batch_pipeline.humann_nucleotide_db": "/humann_nucleotide_db",
+  "metagenomics_batch_pipeline.output_dir":           "analysis_output",
+  "metagenomics_batch_pipeline.threads":              2
+}
