@@ -15,8 +15,7 @@ First, we run `kneaddata`:
 
 ```sh
 kneaddata --unpaired XXXX_subsample.fastq.gz \
-    --output ./ \Starting files
-
+    --output ./ \Starting files \
     --output-prefix XXXX_kneaddata
 ```
 
@@ -223,6 +222,9 @@ as well as 3 paths
 
 ## Running the workflow
 
+> [!TIP]
+> The action starts here!
+
 In it's current state, if you make this directory
 (`hutlab_reproWF/nextflow`)
 the working directory, you should be able to run:
@@ -254,7 +256,7 @@ After adding this, run the workflow again,
 including the `-resume` flag, eg:
 
 ```groovy
-$ nextflow tutorial.nf --kneaddata_db ../input/human_genome/ -resume
+$ nextflow tutorial.nf --kneaddata_db ${PWD}/../input/human_genome/ -resume
 ```
 
 Your previous run should be cached, but now the outputs will be linked
