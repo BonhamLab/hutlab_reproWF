@@ -222,6 +222,9 @@ as well as 3 paths
 
 ## Running the workflow
 
+> [!TIP]
+> The action starts here!
+
 In it's current state, if you make this directory
 (`hutlab_reproWF/nextflow`)
 the working directory, you should be able to run:
