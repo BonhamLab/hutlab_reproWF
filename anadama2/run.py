@@ -58,36 +58,21 @@ workflow.add_task(
     args=[args.metadata])                                                      #Additional arguments 
 
 
-# Task3 add_task_group  - AnADAMA2 example to execute a task on multiple input files/dependencies
-multiple_input_files = glob(os.path.join(args.output, '*.txt')) #Initializing multiple input files 
+# Task3 add_task  - AnADAMA2 example to execute a task on multiple input files/dependencies
+multiple_input_files = glob(os.path.join(args.input, '*.tsv')) #Initializing multiple input files 
 output_files = [os.path.join(args.output,os.path.basename(files+"_backup")) for files in multiple_input_files]
 workflow.add_task_group(
     "cp [depends[0]] [targets[0]]",                            #Command 
-    depends=[multiple_input_files],                            #Tracking executable dependencies
+    depends= [TrackedExecutable("ls")],                            #Tracking executable dependencies
     targets=output_files)                                      #Output target directory
 
 
-# private python function definition 
-def remove_end_tabs_function(task):
-    with open(task.targets[0].name, 'w') as file_handle_out:
-        for line in open(task.depends[0].name):
-            file_handle_out.write(line.rstrip() + "\n")
 
-
-# Task4 add_task  - AnADAMA2 example to usage of python task function 
-workflow.add_task(
-    remove_end_tabs_function,                       #Calling the python function  
-    depends=args.input,                             #Tracking executable dependencies
-    targets=args.output+"/data.tsv.notabs",         #Target output
-    name="remove_end_tabs")
-
-
-#Task5 Add the document to the workflow
+#Task4 Add the document to the workflow
 pdf_report=os.path.join(os.getcwd(),args.output,"pdfReport.pdf")
 workflow.add_document(
     templates="doc/template.py",
-    depends= [args.output+"/data.tsv.notabs"],
-    targets=pdf_report, 
+    targets=pdf_report,
     vars={
         "introduction_text": "Demo Title"
     })

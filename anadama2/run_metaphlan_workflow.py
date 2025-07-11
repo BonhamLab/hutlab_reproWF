@@ -3,7 +3,7 @@ from anadama2 import Workflow
 workflow = Workflow(version="0.0.1", description="A workflow to run MetaPhlAn" )
 
 ### Section #2: Add custom arguments and parse arguments (Optional)
-workflow.add_argument("input-extension", desc="the extensions of the input files", default="fastq")
+workflow.add_argument("input-extension", desc="the extensions of the input files", default="fasta")
 args = workflow.parse_args()
 
 ### Section #3: Get input/output file names (Optional)
