@@ -1,0 +1,9 @@
+{
+  "metagenomics_batch_pipeline.raw_reads_fastqs": [
+    "/home/hutlab_public/Tutorials/hutlab_reproWF/anadama2/input/HD32R1_subsample.fastq",
+    "/home/hutlab_public/Tutorials/hutlab_reproWF/anadama2/input/HD42R4_subsample.fastq"
+  ],
+  "metagenomics_batch_pipeline.kneaddata_db":         "/home/hutlab_public/Tutorials/hutlab_reproWF/input/human_genome",
+  "metagenomics_batch_pipeline.output_dir":           "analysis_output",
+  "metagenomics_batch_pipeline.threads":              2
+}
