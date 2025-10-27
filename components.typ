@@ -302,4 +302,101 @@ workflow {
 )
 ]
 
+= Tutorial
 
+== Step 1 - Read through the intro (up to "running the workflow")
+
+#slide[
+  #set text(16pt)
+```sh
+kneaddata --unpaired XXXX_subsample.fastq.gz \
+    --output ./ \Starting files \
+    --output-prefix XXXX_kneaddata
+
+metaphlan XXXX_kneaddata.fastq.gz --output XXXX_profile.tsv \
+    --input_type fastq
+
+humann --input XXXX_kneaddata.fastq.gz \
+    --taxonomic-profile XXXX_profile.tsv \
+    --output ./ \
+    --output-basename XXXX
+```
+]
+
+#slide[
+#set text(13pt)
+#diagram(
+  node-stroke: blue,
+  node-fill:white,
+  edge-corner-radius: none,
+  edge-stroke: purple.darken(50%),
+  label-sep:0.2em,
+  spacing: (10pt, 47pt),
+
+  // Nodes
+  node((0,0), [`XXXX_subsample.fastq.gz`], name: <in1>),
+
+  // step1
+  node((0.5,1), [`XXXX_kneaddata.fastq.gz`], name: <knead_out>),
+  node((0.5,-1), [`XXXX_kneaddata.log`], name: <knead_log>),
+  node((0.5,-1.5), [`XXXX_kneaddata*.log`]),
+  node((0.55,-1.45), [`XXXX_kneaddata*.log`], name: <knead_others>),
+  node((0.6,-1.4), [`XXXX_kneaddata*.log`], name: <knead_others>),
+
+  edge(<in1>,<knead_out>, "-|>"),
+  edge(<in1>,<knead_log>, "-|>"),
+
+  node((2.5,0), [`XXXX_profile.tsv`], name:<profile>),
+  node((2.5,-1), [`XXXX_bowtie2.tsv`], name:<bowtie>),
+  node((2,-1.5), [`XXXX.sam`], name:<sam>),
+  edge(<knead_out>, <profile>, "-|>"),
+  edge(<knead_out>, <bowtie>, "-|>"),
+  edge(<knead_out>, <sam>, "-|>"),
+
+  node((4,1), [`XXXX_genefamilies.tsv`], name:<gf>),
+  node((4,-1), [`XXXX_pathabundance.tsv`], name:<pa>),
+  node((4.5,-0.5), [`XXXX_coverage.tsv`], name:<pc>),
+
+  edge(<knead_out>, (3.3,0.5), <gf>, "-|>"),
+  edge(<profile>, (3.3,0.5), <pa>, "-|>"),
+  edge((3.3,0.5), <pc>, "-|>"),
+)
+
+]
+
+== Step 2 - Run the workflow
+
+```sh
+$ cd ~/Tutorials/hutlab_reproWF/nextflow
+$ nextflow tutorial.nf --kneaddata_db ${PWD}/../input/human_genome
+```
+
+
+== Step 3 - Add Metaphlan Step
+
+#text(18pt)[
+1. Uncomment the metaphlan step in the `workflow`
+2. Next, update the metaphlan `process` with the metaphlan command
+  in the `script` block
+  ```groovy
+  script:
+
+  """
+  metaphlan XXXX_kneaddata.fastq.gz --output XXXX_profile.tsv \
+    --input_type fastq
+  """
+  ```
+   #text(red)[Don't forget to use string interpolation
+   to replace the first and second arguments]
+3. Run the workflow again (using the `-resume` flag)
+4. (optional) Add a `publishDir` directive
+]
+
+
+== Step 4 - Add the HUMAnN step to the workflow
+
+- Add step to the `workflow`
+- Add the process definition
+  - Must have `input:` section, and take the arguments from
+    the `metaphlan` outputs
+  - Must have `output:` section

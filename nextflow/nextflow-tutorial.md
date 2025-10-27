@@ -230,7 +230,7 @@ In it's current state, if you make this directory
 the working directory, you should be able to run:
 
 ```sh
-$ nextflow tutorial.nf --kneaddata_db ../input/human_genome/
+$ nextflow tutorial.nf --kneaddata_db ${PWD}/../input/human_genome/
 ```
 
 This will find the 6 fastq files and run `kneaddata` on them.
@@ -256,7 +256,7 @@ After adding this, run the workflow again,
 including the `-resume` flag, eg:
 
 ```groovy
-$ nextflow tutorial.nf --kneaddata_db ${PWD}/../input/human_genome/ -resume
+$ nextflow tutorial.nf --kneaddata_db ${PWD:quality}/../input/human_genome/ -resume
 ```
 
 Your previous run should be cached, but now the outputs will be linked
